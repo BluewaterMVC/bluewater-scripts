@@ -1,24 +1,19 @@
-documentTypes:
-  - markdown
-
-dictionaries:
-  - en_US
-  - es_ES
-  - fr_FR
-  - de_DE
-  - ru_RU
-  - custom_en
-  - custom_es
-  - custom_fr
-  - custom_de
-  - custom_ru
-
-customDictionaries:
-  custom_en: .github/bw-dict-en.txt
-  custom_es: .github/bw-dict-es.txt
-  custom_fr: .github/bw-dict-fr.txt
-  custom_de: .github/bw-dict-de.txt
-  custom_ru: .github/bw-dict-ru.txt
+files:
+  - path: docs/en/**/*.md
+    dictionary: en_US
+    customDictionary: .shared-scripts/dictionaries/bw-dict-en.txt
+  - path: docs/fr/**/*.md
+    dictionary: fr_FR
+    customDictionary: .shared-scripts/dictionaries/bw-dict-fr.txt
+  - path: docs/de/**/*.md
+    dictionary: de_DE
+    customDictionary: .shared-scripts/dictionaries/bw-dict-de.txt
+  - path: docs/es/**/*.md
+    dictionary: es_ES
+    customDictionary: .shared-scripts/dictionaries/bw-dict-es.txt
+  - path: docs/ru/**/*.md
+    dictionary: ru_RU
+    customDictionary: .shared-scripts/dictionaries/bw-dict-ru.txt
 
 excludeFiles:
   - "vendor/**"
