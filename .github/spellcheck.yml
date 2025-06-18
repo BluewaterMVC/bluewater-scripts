@@ -1,0 +1,26 @@
+documentTypes:
+  - markdown
+
+dictionaries:
+  - en_US
+  - es_ES
+  - fr_FR
+  - de_DE
+  - ru_RU
+  - custom_en
+  - custom_es
+  - custom_fr
+  - custom_de
+  - custom_ru
+
+customDictionaries:
+  custom_en: .github/bw-dict-en.txt
+  custom_es: .github/bw-dict-es.txt
+  custom_fr: .github/bw-dict-fr.txt
+  custom_de: .github/bw-dict-de.txt
+  custom_ru: .github/bw-dict-ru.txt
+
+excludeFiles:
+  - "vendor/**"
+  - "node_modules/**"
+  - ".git/**"
