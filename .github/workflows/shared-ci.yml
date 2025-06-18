@@ -1,0 +1,13 @@
+# .github/workflows/shared-ci.yml
+name: Shared CI Workflow
+
+on:
+  workflow_call:   # <- This makes it reusable!
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Tests
+        run: echo "Running shared build and test steps"
