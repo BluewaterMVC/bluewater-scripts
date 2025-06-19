@@ -1,8 +1,36 @@
-# bluewater-scripts
+# 🌊 Bluewater Central Script Repository
+
 
 **The canonical, versioned library of automation scripts and Git hooks for all Bluewater repositories.  
 Ensures consistent standards, metadata management, and automated workflows across the entire Bluewater platform.**
 
+---
+
+![Framework](https://img.shields.io/badge/framework-Bluewater-lightblue?logo=dropbox&logoColor=white)
+![Status](https://img.shields.io/badge/status-active-blue)
+![Version](https://img.shields.io/badge/version-1.0-blue?logo=semantic-release&logoColor=white)
+
+![Docs Available](https://img.shields.io/badge/docs-Available-brightgreen?logo=readthedocs&logoColor=white)
+![License](https://img.shields.io/badge/license-CC--BY--4.0-blue?logo=open-source-initiative&logoColor=white)
+![Multi-Lingual](https://img.shields.io/badge/i18n-multi--language-brightgreen?logo=googletranslate&logoColor=white)
+
+
+<!-- Multi-language Translation Status with Images -->
+
+**Translation Status:**
+
+<img src="https://flagcdn.com/24x18/us.png" alt="US" width="24"/> <img src="https://img.shields.io/badge/lang-en--100%25-brightgreen" alt="English" />
+<br>
+<img src="https://flagcdn.com/24x18/fr.png" alt="FR" width="24"/> <img src="https://img.shields.io/badge/lang-fr--70%25-yellow" alt="Français" />
+<br>
+<img src="https://flagcdn.com/24x18/de.png" alt="DE" width="24"/> <img src="https://img.shields.io/badge/lang-de--30%25-orange" alt="Deutsch" />
+<br>
+<img src="https://flagcdn.com/24x18/es.png" alt="ES" width="24"/> <img src="https://img.shields.io/badge/lang-es--planned-lightgrey" alt="Español" />
+<br>
+<img src="https://flagcdn.com/24x18/ru.png" alt="RU" width="24"/> <img src="https://img.shields.io/badge/lang-ru--planned-lightgrey" alt="Русский" />
+
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](../../pulls)
+[![Contributors](https://img.shields.io/github/contributors/bluewatermvc/bluewater-scripts?style=flat-square)](https://github.com/bluewatermvc/bluewater-scripts/graphs/contributors)
 ---
 
 ## Overview
@@ -16,20 +44,20 @@ This repository guarantees that every contributor and every repository—whether
 
 ## Key Features
 
-- **Canonical Git Hooks**  
+- **Canonical Git Hooks**
   - Pre-commit, commit-msg, and pre-push hooks for enforcing standards on every commit.
   - Automation for metadata updates (e.g., copyright, last updated).
   - Protection against common documentation and code quality issues.
-- **Cross-Platform Support**  
+- **Cross-Platform Support**
   - Scripts are written for both Unix (bash) and Windows (batch).
-- **Strict Linting and Formatting**  
+- **Strict Linting and Formatting**
   - Wrappers for `markdownlint`, `yamllint`, and other linters.
   - Configurable and extensible for project-specific requirements.
-- **Docs Structure Enforcement**  
+- **Docs Structure Enforcement**
   - Shared scripts for maintaining multi-language `/docs/{lang}/` directory trees and validating structure.
-- **Centralized Maintenance**  
+- **Centralized Maintenance**
   - One authoritative place for updates; propagate via submodules to all dependent repositories.
-- **Transparency and Open Source**  
+- **Transparency and Open Source**
   - All scripts are public, auditable, and designed to build trust in the Bluewater process.
 
 ---

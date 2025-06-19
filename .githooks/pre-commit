@@ -1,0 +1,262 @@
+#!/bin/bash
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+fail=0
+TODAY=$(date +%F)
+YEAR=$(date +%Y)
+#!/bin/bash
+
+# Bluewater pre-commit hook: Enforce code, PHPDoc, and documentation standards
+
+set -e
+
+echo "=== Running Bluewater pre-commit checks ==="
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+# 1. PHP Syntax and Standards Check
+if command -v php > /dev/null 2>&1; then
+    echo "--- Checking PHP syntax and PSR-12 compliance..."
+    STAGED_PHP_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.php$' || true)
+    if [ -n "$STAGED_PHP_FILES" ]; then
+        for FILE in $STAGED_PHP_FILES; do
+            php -l "$FILE" || { echo "PHP syntax error in $FILE"; exit 1; }
+            if command -v phpcs > /dev/null 2>&1; then
+                phpcs --standard=PSR12 "$FILE" || { echo "PSR-12 code style violation in $FILE"; exit 1; }
+            fi
+        done
+    fi
+fi
+
+# 2. PHPDoc Standards Check
+if command -v phpstan > /dev/null 2>&1; then
+    echo "--- Running PHPStan for code and PHPDoc compliance..."
+    phpstan analyse --no-progress --memory-limit=512M || { echo "PHPStan analysis failed. See errors above."; exit 1; }
+fi
+
+# 3. Markdown Lint (docs)
+if command -v npx > /dev/null 2>&1; then
+    echo "--- Running Markdown lint on staged .md files..."
+    STAGED_MD_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.md$' || true)
+    if [ -n "$STAGED_MD_FILES" ]; then
+        npx markdownlint $STAGED_MD_FILES || { echo "Markdown linting failed. See errors above."; exit 1; }
+    fi
+fi
+
+# 4. Check for forbidden manual changes to /docs/ structure
+FORBIDDEN=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^docs/' | grep -Ev '^docs/(en|[a-z]{2,5})/.*\.md$' || true)
+if [ -n "$FORBIDDEN" ]; then
+    echo "Error: Manual changes to /docs/ structure or non-markdown files detected."
+    echo "Please use /tools/i18n/sync_docs_structure.py for docs structure and automation."
+    exit 1
+fi
+
+echo "All Bluewater pre-commit checks passed."
+exit 0
+
+# Only check files staged for commit
+files=$(git diff --cached --name-only --diff-filter=ACM)
+if [ -z "$files" ]; then
+  exit 0
+fi
+
+echo "Running pre-commit documentation and code checks..."
+
+for file in $files; do
+  # Only check if file exists (not deleted)
+  if [ ! -f "$file" ]; then
+    continue
+  fi
+
+  # For Markdown docs
+  if [[ "$file" == *.md ]]; then
+    missing=""
+
+    # Check for H1 title in first 5 lines
+    if ! head -5 "$file" | grep -qE '^# .+'; then
+      missing="$missing\n  - H1 title at top"
+    fi
+
+    # Check for "Last updated" footer in last 8 lines
+    if ! tail -8 "$file" | grep -iq 'last updated'; then
+      missing="$missing\n  - Last updated footer at end"
+    fi
+
+    # Check for YAML metadata (optional)
+    if ! (head -15 "$file" | grep -q '^---$' && tail -n +2 "$file" | head -14 | grep -q '^---$'); then
+      missing="$missing\n  - YAML metadata block (optional)"
+    fi
+
+    # Report issues and block commit if missing fields
+    if [ -n "$missing" ]; then
+      echo -e "${RED}✗ $file is missing the following:$NC$missing"
+      fail=1
+    else
+      echo -e "${GREEN}✓ $file has all required fields.${NC}"
+    fi
+
+    # Replace date and copyright tokens in MD files
+    sed -i -E "s|([#/]{0,2}[[:space:]]*)📅 \*\*Date:\*\* \{\{DATE\}\}|\\1📅 **Date:** $TODAY|" "$file"
+    sed -i -E "s|([#/]{0,2}[[:space:]]*)Last updated: \{\{DATE\}\}|\\1Last updated: $TODAY|" "$file"
+    sed -i -E "s|Copyright \(c\) ([0-9]{4}) - [0-9]{4}|Copyright (c) \1 - $YEAR|" "$file"
+    sed -i -E "s|@copyright \(c\) ([0-9]{4}) - [0-9]{4}|@copyright (c) \1 - $YEAR|" "$file"
+    sed -i -E "s|@modified \{\{[0-9]{4}-[0-9]{2}-[0-9]{2}\}\}|@modified $TODAY|" "$file"
+
+    # Re-add file if changed
+    if ! git diff --quiet "$file"; then
+      git add "$file"
+    fi
+
+  # For code files (not markdown)
+  elif [[ "$file" =~ \.(php|js|ts|css|py|sh|yml|yaml|ini|env|json|xml)$ ]]; then
+    # Replace {{YEAR}} with current year
+    sed -i -E "s/\{\{YEAR\}\}/$YEAR/g" "$file"
+    # Optionally: add logic for other tokens as needed
+    if ! git diff --quiet "$file"; then
+      git add "$file"
+    fi
+  fi
+done
+
+if [ "$fail" -eq 1 ]; then
+  echo -e "${RED}\nAborting commit. Please fix the above issues in your Markdown docs.${NC}"
+  exit 1
+else
+  echo -e "${GREEN}All checked files passed.${NC}"
+fi
+
+exit 0
+#!/bin/bash
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+fail=0
+TODAY=$(date +%F)
+YEAR=$(date +%Y)
+#!/bin/bash
+
+# Bluewater pre-commit hook: Enforce code, PHPDoc, and documentation standards
+
+set -e
+
+echo "=== Running Bluewater pre-commit checks ==="
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+# 1. PHP Syntax and Standards Check
+if command -v php > /dev/null 2>&1; then
+    echo "--- Checking PHP syntax and PSR-12 compliance..."
+    STAGED_PHP_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.php$' || true)
+    if [ -n "$STAGED_PHP_FILES" ]; then
+        for FILE in $STAGED_PHP_FILES; do
+            php -l "$FILE" || { echo "PHP syntax error in $FILE"; exit 1; }
+            if command -v phpcs > /dev/null 2>&1; then
+                phpcs --standard=PSR12 "$FILE" || { echo "PSR-12 code style violation in $FILE"; exit 1; }
+            fi
+        done
+    fi
+fi
+
+# 2. PHPDoc Standards Check
+if command -v phpstan > /dev/null 2>&1; then
+    echo "--- Running PHPStan for code and PHPDoc compliance..."
+    phpstan analyse --no-progress --memory-limit=512M || { echo "PHPStan analysis failed. See errors above."; exit 1; }
+fi
+
+# 3. Markdown Lint (docs)
+if command -v npx > /dev/null 2>&1; then
+    echo "--- Running Markdown lint on staged .md files..."
+    STAGED_MD_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.md$' || true)
+    if [ -n "$STAGED_MD_FILES" ]; then
+        npx markdownlint $STAGED_MD_FILES || { echo "Markdown linting failed. See errors above."; exit 1; }
+    fi
+fi
+
+# 4. Check for forbidden manual changes to /docs/ structure
+FORBIDDEN=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^docs/' | grep -Ev '^docs/(en|[a-z]{2,5})/.*\.md$' || true)
+if [ -n "$FORBIDDEN" ]; then
+    echo "Error: Manual changes to /docs/ structure or non-markdown files detected."
+    echo "Please use /tools/i18n/sync_docs_structure.py for docs structure and automation."
+    exit 1
+fi
+
+echo "All Bluewater pre-commit checks passed."
+exit 0
+
+# Only check files staged for commit
+files=$(git diff --cached --name-only --diff-filter=ACM)
+if [ -z "$files" ]; then
+  exit 0
+fi
+
+echo "Running pre-commit documentation and code checks..."
+
+for file in $files; do
+  # Only check if file exists (not deleted)
+  if [ ! -f "$file" ]; then
+    continue
+  fi
+
+  # For Markdown docs
+  if [[ "$file" == *.md ]]; then
+    missing=""
+
+    # Check for H1 title in first 5 lines
+    if ! head -5 "$file" | grep -qE '^# .+'; then
+      missing="$missing\n  - H1 title at top"
+    fi
+
+    # Check for "Last updated" footer in last 8 lines
+    if ! tail -8 "$file" | grep -iq 'last updated'; then
+      missing="$missing\n  - Last updated footer at end"
+    fi
+
+    # Check for YAML metadata (optional)
+    if ! (head -15 "$file" | grep -q '^---$' && tail -n +2 "$file" | head -14 | grep -q '^---$'); then
+      missing="$missing\n  - YAML metadata block (optional)"
+    fi
+
+    # Report issues and block commit if missing fields
+    if [ -n "$missing" ]; then
+      echo -e "${RED}✗ $file is missing the following:$NC$missing"
+      fail=1
+    else
+      echo -e "${GREEN}✓ $file has all required fields.${NC}"
+    fi
+
+    # Replace date and copyright tokens in MD files
+    sed -i -E "s|([#/]{0,2}[[:space:]]*)📅 \*\*Date:\*\* \{\{DATE\}\}|\\1📅 **Date:** $TODAY|" "$file"
+    sed -i -E "s|([#/]{0,2}[[:space:]]*)Last updated: \{\{DATE\}\}|\\1Last updated: $TODAY|" "$file"
+    sed -i -E "s|Copyright \(c\) ([0-9]{4}) - [0-9]{4}|Copyright (c) \1 - $YEAR|" "$file"
+    sed -i -E "s|@copyright \(c\) ([0-9]{4}) - [0-9]{4}|@copyright (c) \1 - $YEAR|" "$file"
+    sed -i -E "s|@modified \{\{[0-9]{4}-[0-9]{2}-[0-9]{2}\}\}|@modified $TODAY|" "$file"
+
+    # Re-add file if changed
+    if ! git diff --quiet "$file"; then
+      git add "$file"
+    fi
+
+  # For code files (not markdown)
+  elif [[ "$file" =~ \.(php|js|ts|css|py|sh|yml|yaml|ini|env|json|xml)$ ]]; then
+    # Replace {{YEAR}} with current year
+    sed -i -E "s/\{\{YEAR\}\}/$YEAR/g" "$file"
+    # Optionally: add logic for other tokens as needed
+    if ! git diff --quiet "$file"; then
+      git add "$file"
+    fi
+  fi
+done
+
+if [ "$fail" -eq 1 ]; then
+  echo -e "${RED}\nAborting commit. Please fix the above issues in your Markdown docs.${NC}"
+  exit 1
+else
+  echo -e "${GREEN}All checked files passed.${NC}"
+fi
+
+exit 0
